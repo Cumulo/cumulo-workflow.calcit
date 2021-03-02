@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@calcit/procs@^0.2.62":
-  version "0.2.76"
-  resolved "https://registry.yarnpkg.com/@calcit/procs/-/procs-0.2.76.tgz#32b03de70dab13ab39cdd08f7c737169ab2185d3"
-  integrity sha512-WkIqyZ/1RRY7w+W+EGzOTzHTdsJdP83+iPGvVtsPgxS9Cn5SBz+ekS6yy6D/y5nKmSkO8twPI50XBJb3/tNnEQ==
+"@calcit/procs@^0.2.77":
+  version "0.2.77"
+  resolved "https://registry.yarnpkg.com/@calcit/procs/-/procs-0.2.77.tgz#ee7a7b46ec64d6563e6c23c305fa5cd7e5b0162a"
+  integrity sha512-XHxG9sN5bqQKmTirD4Q+I7saeT0WidliL9oHCuAlJkCqcYTNGKn6ZBY5wRCJO9WEErAZkSgfBqm/XLbJUKdt5A==
   dependencies:
     "@calcit/ternary-tree" "0.0.9"
     "@cirru/parser.ts" "^0.0.1"
@@ -337,9 +337,9 @@ es-module-lexer@^0.4.0:
   integrity sha512-iuEGihqqhKWFgh72Q/Jtch7V2t/ft8w8IPP2aEN8ArYKO+IWyo6hsi96hCdgyeEDQIV3InhYQ9BlwUFPGXrbEQ==
 
 esbuild@^0.8.52:
-  version "0.8.53"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.53.tgz#b408bb0ca1b29dab13d8bbf7d59f59afe6776e86"
-  integrity sha512-GIaYGdMukH58hu+lf07XWAeESBYFAsz8fXnrylHDCbBXKOSNtFmoYA8PhSeSF+3/qzeJ0VjzV9AkLURo5yfu3g==
+  version "0.8.54"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.54.tgz#2f32ff80e95c69a0f25b799d76a27c05e2857cdf"
+  integrity sha512-DJH38OiTgXJxFb/EhHrCrY8eGmtdkTtWymHpN9IYN9AF+4jykT0dQArr7wzFejpVbaB0TMIq2+vfNRWr3LXpvw==
 
 escalade@^3.1.1:
   version "3.1.1"

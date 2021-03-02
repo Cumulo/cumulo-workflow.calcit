@@ -15,10 +15,9 @@
             let-sugar
                   [] username password
                   , op-data
-                maybe-user $ find
-                  fn (user)
+                maybe-user $ ->> (:users db) (vals) (set->list)
+                  find $ fn (user)
                     and $ = username (:name user)
-                  vals $ :users db
               update-in db ([] :sessions sid)
                 fn (session)
                   if (some? maybe-user)
@@ -164,7 +163,7 @@
                   [] :users $ :user-id session
                 f $ case op (:session/connect session/connect) (:session/disconnect session/disconnect) (:session/remove-message session/remove-message) (:user/log-in user/log-in) (:user/sign-up user/sign-up) (:user/log-out user/log-out) (:router/change router/change)
                   op $ do (println "\"Unknown op:" op) identity
-              f db op-data sid op-id op-time session user
+              f db op-data sid op-id op-time
       :proc $ quote ()
     |app.config $ {}
       :ns $ quote (ns app.config)
@@ -218,7 +217,8 @@
             case op
               :states $ reset! *states (update-states @*states op-data)
               :effect/connect $ connect!
-              ws-send! $ {} (:kind :op) (:op op) (:data op-data)
+              op $ ws-send!
+                {} (:kind :op) (:op op) (:data op-data)
         |*store $ quote (defatom *store nil)
         |main! $ quote
           defn main! ()
@@ -242,7 +242,7 @@
               port $ or (-> url-obj .-query .-port) (:port config/site)
             ws-connect! (str "\"ws://" host "\":" port)
               {}
-                :on-open $ fn () (simulate-login!)
+                :on-open $ fn (event) (simulate-login!)
                 :on-close $ fn (event) (reset! *store nil) (js/console.error "\"Lost connection!")
                 :on-data $ fn (data)
                   case (:kind data)
@@ -395,8 +395,8 @@
                 =< 8 nil
                 list->
                   {} $ :style ui/row
-                  ->> members $ map
-                    fn (pair)
+                  ->> members (to-pairs)
+                    map $ fn (pair)
                       let[] (k username) pair $ [] k
                         div
                           {} $ :style
@@ -450,7 +450,7 @@
                 , nil
         |twig-members $ quote
           defn twig-members (sessions users)
-            ->> sessions
+            ->> sessions (to-pairs)
               map $ fn (pair)
                 let[] (k session) pair $ [] k
                   get-in users $ [] (:user-id session) :name
@@ -521,9 +521,9 @@
                     swap! *client-caches assoc sid new-store
             new-twig-loop!
         |*client-caches $ quote
-          def *client-caches $ {}
+          defatom *client-caches $ {}
         |on-exit! $ quote
-          defn on-exit! (code) (persist-db!)
+          defn on-exit! (code _) (persist-db!)
             ; println "\"exit code is:" $ pr-str code
             js/process.exit
         |storage-file $ quote
