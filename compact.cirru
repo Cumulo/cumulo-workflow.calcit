@@ -489,9 +489,10 @@
                 port $ if (some? js/process.env.port) (js/parseInt js/process.env.port) (:port config/site)
               run-server! port
               println $ str "\"Server started on port:" port
-            render-loop!
+            render-loop! *loop-trigger
             js/process.on "\"SIGINT" on-exit!
             repeat! 600 $ fn () (persist-db!)
+        |*loop-trigger $ quote (defatom *loop-trigger 0)
         |run-server! $ quote
           defn run-server! (port)
             wss-serve! port $ {}
@@ -544,15 +545,18 @@
             write-mildly! storage-path file-content
             write-mildly! backup-path file-content
         |reload! $ quote
-          defn reload! () (println "\"Code updated.") (clear-twig-caches!)
+          defn reload! () (println "\"Code updated9.") (clear-twig-caches!)
             reset! *reel $ refresh-reel @*reel @*initial-db updater
+            clearTimeout @*loop-trigger
+            render-loop! *loop-trigger
             sync-clients! @*reader-reel
         |*reader-reel $ quote (defatom *reader-reel @*reel)
         |render-loop! $ quote
-          defn render-loop! ()
+          defn render-loop! (*loop)
             when
               not $ identical? @*reader-reel @*reel
               reset! *reader-reel @*reel
               sync-clients! @*reader-reel
-            delay! 0.2 render-loop!
+            reset! *loop $ delay! 0.2
+              fn () $ render-loop! *loop
       :proc $ quote ()
