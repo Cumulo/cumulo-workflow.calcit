@@ -264,7 +264,10 @@
               comp-container (:states @*states) @*store
               , dispatch!
         |reload! $ quote
-          defn reload! () (clear-cache!) (render-app! render!) (println "\"Code updated.")
+          defn reload! () (remove-watch *store :changes) (remove-watch *store :changes) (clear-cache!) (render-app! render!)
+            add-watch *store :changes $ fn (store prev) (render-app! render!)
+            add-watch *states :changes $ fn (states prev) (render-app! render!)
+            println "\"Code updated."
         |mount-target $ quote
           def mount-target $ .querySelector js/document "\".app"
       :proc $ quote ()
@@ -304,7 +307,7 @@
         ns app.comp.container $ :require
           [] hsl.core :refer $ [] hsl
           [] respo-ui.core :as ui
-          [] respo.core :refer $ [] defcomp <> >> div span button
+          [] respo.core :refer $ [] defcomp <> >> div span button input pre
           [] respo.comp.inspect :refer $ [] comp-inspect
           [] respo.comp.space :refer $ [] =<
           [] app.comp.navigation :refer $ [] comp-navigation
@@ -332,7 +335,15 @@
                   comp-navigation (:logged-in? store) (:count store)
                   if (:logged-in? store)
                     case (:name router)
-                      :home $ <> "\"Home"
+                      :home $ div
+                        {} $ :style
+                          {} $ :padding "\"8px"
+                        input $ {} (:style ui/input)
+                          :value $ :demo state
+                        =< 8 nil
+                        <> "\"demo page"
+                        pre $ {}
+                          :inner-text $ str "\"backend data" (write-cirru-edn store)
                       :profile $ comp-profile (:user store) (:data router)
                       <> router
                     comp-login $ >> states :login
@@ -547,7 +558,7 @@
         |reload! $ quote
           defn reload! () (println "\"Code updated9.") (clear-twig-caches!)
             reset! *reel $ refresh-reel @*reel @*initial-db updater
-            clearTimeout @*loop-trigger
+            js/clearTimeout @*loop-trigger
             render-loop! *loop-trigger
             sync-clients! @*reader-reel
         |*reader-reel $ quote (defatom *reader-reel @*reel)
