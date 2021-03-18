@@ -5,9 +5,10 @@
   "scripts": {
     "watch-server": "cr --emit-js",
     "build-server": "target=node entry=./server.js yarn webpack && node js-out/bundle.js",
+    "dev-server": "hot=true target=node entry=./server.js yarn webpack --watch",
     "compile-server": "cr --emit-js --once",
-    "compile-page": "cr --emit-js --once --init-fn:app.client/main! --reload-fn:app.client/main! --emit-path=out-page",
-    "watch-page": "cr --emit-js --emit-path:out-page/ --init-fn:app.client/main! --reload-fn:app.client/main!"
+    "compile-page": "cr --emit-js --once --init-fn:app.client/main! --reload-fn:app.client/reload! --emit-path=out-page",
+    "watch-page": "cr --emit-js --emit-path:out-page/ --init-fn:app.client/main! --reload-fn:app.client/reload!"
   },
   "devDependencies": {
     "md5": "^2.3.0",

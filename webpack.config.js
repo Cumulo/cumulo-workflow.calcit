@@ -23,9 +23,6 @@ module.exports = {
     shortid: "commonjs shortid",
     md5: "commonjs md5",
   },
-  devServer: {
-    hot: true,
-  },
   output: {
     path: path.resolve(__dirname, "js-out/"),
     filename: "bundle.js",
