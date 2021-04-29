@@ -12,9 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: wget
-      run: mkdir ci-bin/ && wget -O ci-bin/cr_once http://repo.calcit-lang.org/binaries/linux/cr_once
+      run: mkdir ci-bin/ && wget -O ci-bin/calcit_runner http://repo.calcit-lang.org/binaries/linux/calcit_runner
     - name: "permission"
-      run: chmod +x ci-bin/cr_once
+      run: chmod +x ci-bin/calcit_runner
 
     - name: "prepare modules"
       run: >
@@ -25,11 +25,11 @@ jobs:
         && git clone https://github.com/Respo/respo.calcit.git
         && git clone https://github.com/Respo/respo-ui.calcit.git
         && git clone https://github.com/Respo/respo-message.calcit.git
-        && git clone https://github.com/Cumulo/cumulo-util.calcit.git --branch=0.0.1
-        && git clone https://github.com/Cumulo/cumulo-reel.calcit.git --branch=0.0.1
+        && git clone https://github.com/Cumulo/cumulo-util.calcit.git
+        && git clone https://github.com/Cumulo/cumulo-reel.calcit.git --branch=0.0.2
         && git clone https://github.com/mvc-works/ws-edn.calcit.git
 
     - name: "compiles to js"
       run: >
-        ./ci-bin/cr_once --emit-js --emit-path:out-page/
-        && ./ci-bin/cr_once --emit-js --init-fn:cumulo-reel.server/main! --reload-fn:cumulo-reel.server/reload!
+        ./ci-bin/calcit_runner --emit-js --once --emit-path out-page/
+        && ./ci-bin/calcit_runner --emit-js --once --init-fn cumulo-reel.server/main! --reload-fn cumulo-reel.server/reload!

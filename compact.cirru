@@ -15,7 +15,7 @@
             let-sugar
                   [] username password
                   , op-data
-                maybe-user $ ->> (:users db) (vals) (set->list)
+                maybe-user $ -> (:users db) (vals) (set->list)
                   find $ fn (user)
                     and $ = username (:name user)
               update-in db ([] :sessions sid)
@@ -159,8 +159,8 @@
           defn updater (db op op-data sid op-id op-time)
             let
                 session $ get-in db ([] :sessions sid)
-                user $ get-in db
-                  [] :users $ :user-id session
+                user $ if (some? session)
+                  get-in db $ [] :users (:user-id session)
                 f $ case op (:session/connect session/connect) (:session/disconnect session/disconnect) (:session/remove-message session/remove-message) (:user/log-in user/log-in) (:user/sign-up user/sign-up) (:user/log-out user/log-out) (:router/change router/change)
                   op $ do (println "\"Unknown op:" op) identity
               f db op-data sid op-id op-time
@@ -322,7 +322,8 @@
         |comp-container $ quote
           defcomp comp-container (states store)
             let
-                state $ :data states
+                state $ either (:data states)
+                  {} $ :demo "\""
                 session $ :session
                   either store $ {}
                 router $ either
@@ -406,7 +407,7 @@
                 =< 8 nil
                 list->
                   {} $ :style ui/row
-                  ->> members (to-pairs)
+                  -> members (to-pairs)
                     map $ fn (pair)
                       let[] (k username) pair $ [] k
                         div
@@ -461,7 +462,7 @@
                 , nil
         |twig-members $ quote
           defn twig-members (sessions users)
-            ->> sessions (to-pairs)
+            -> sessions (to-pairs)
               map $ fn (pair)
                 let[] (k session) pair $ [] k
                   get-in users $ [] (:user-id session) :name
