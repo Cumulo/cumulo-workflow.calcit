@@ -39,9 +39,9 @@
                   [] username password
                   , op-data
                 maybe-user $ find
+                  vals $ :users db
                   fn (user)
                     = username $ :name user
-                  vals $ :users db
               if (some? maybe-user)
                 update-in db ([] :sessions sid :messages)
                   fn (messages)
