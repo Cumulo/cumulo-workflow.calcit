@@ -1,13 +1,15 @@
 {
   "dependencies": {
-    "@calcit/procs": "^0.3.16"
+    "@calcit/procs": "^0.3.17"
   },
   "scripts": {
     "watch-server": "cr --emit-js",
-    "build-server": "target=node entry=./server.js yarn webpack && node js-out/bundle.js",
-    "dev-server": "hot=true target=node entry=./server.js yarn webpack --watch",
+    "build-server": "yarn webpack && node js-out/bundle.js",
+    "dev-server": "hot=true webpack --watch",
     "compile-server": "cr --emit-js --once",
     "compile-page": "cr --emit-js --once --init-fn app.client/main! --reload-fn app.client/reload! --emit-path out-page",
+    "release-page": "vite build --base=./",
+    "release-server": "webpack",
     "watch-page": "cr --emit-js --emit-path out-page/ --init-fn app.client/main! --reload-fn app.client/reload!"
   },
   "devDependencies": {
@@ -16,7 +18,7 @@
     "shortid": "^2.2.16",
     "url-parse": "^1.5.1",
     "vite": "^2.3.3",
-    "webpack": "^5.37.0",
+    "webpack": "^5.37.1",
     "webpack-cli": "^4.7.0",
     "ws": "^7.4.5"
   },
