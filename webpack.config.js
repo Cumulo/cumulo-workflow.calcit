@@ -1,10 +1,10 @@
 let path = require("path");
 let webpack = require('webpack');
 
-let bundleTarget = process.env.target === "node" ? "node" : "web";
+let bundleTarget = process.env.target === "web" ? "web" : "node";
 console.log("Bundle target:", bundleTarget);
 
-let entry = process.env.entry ?? '"./client.js"';
+let entry = process.env.entry ?? './server.js';
 console.log("Entry:", entry);
 
 let hot = process.env.hot === 'true' ? true : false;

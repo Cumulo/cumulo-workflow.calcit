@@ -8,7 +8,7 @@
       :ns $ quote
         ns app.updater.user $ :require
           [] cumulo-util.core :refer $ [] find-first
-          [] "\"md5" :as md5
+          [] "\"md5" :default md5
       :defs $ {}
         |log-in $ quote
           defn log-in (db op-data sid op-id op-time)
@@ -22,7 +22,7 @@
                 fn (session)
                   if (some? maybe-user)
                     if
-                      = (md5/@ password) (:password maybe-user)
+                      = (md5 password) (:password maybe-user)
                       assoc session :user-id $ :id maybe-user
                       update session :messages $ fn (messages)
                         assoc messages op-id $ {} (:id op-id)
@@ -51,7 +51,7 @@
                   assoc-in ([] :sessions sid :user-id) op-id
                   assoc-in ([] :users op-id)
                     {} (:id op-id) (:name username) (:nickname username)
-                      :password $ md5/@ password
+                      :password $ md5 password
                       :avatar nil
       :proc $ quote ()
     |app.updater.router $ {}
@@ -161,8 +161,15 @@
                 session $ get-in db ([] :sessions sid)
                 user $ if (some? session)
                   get-in db $ [] :users (:user-id session)
-                f $ case op (:session/connect session/connect) (:session/disconnect session/disconnect) (:session/remove-message session/remove-message) (:user/log-in user/log-in) (:user/sign-up user/sign-up) (:user/log-out user/log-out) (:router/change router/change)
-                  op $ do (println "\"Unknown op:" op) identity
+                f $ case-default op
+                  fn (& args) (println "\"Unknown op:" op) db
+                  :session/connect session/connect
+                  :session/disconnect session/disconnect
+                  :session/remove-message session/remove-message
+                  :user/log-in user/log-in
+                  :user/sign-up user/sign-up
+                  :user/log-out user/log-out
+                  :router/change router/change
               f db op-data sid op-id op-time
       :proc $ quote ()
     |app.config $ {}
@@ -205,7 +212,7 @@
           [] ws-edn.client :refer $ [] ws-connect! ws-send!
           [] recollect.patch :refer $ [] patch-twig
           [] cumulo-util.core :refer $ [] on-page-touch
-          [] "\"url-parse" :as url-parse
+          [] "\"url-parse" :default url-parse
       :defs $ {}
         |ssr? $ quote
           def ssr? $ some? (.querySelector js/document "\"meta.respo-ssr")
@@ -231,26 +238,27 @@
             on-page-touch $ fn ()
               if (nil? @*store) (connect!)
             println "\"App started!"
+        |on-server-data $ quote
+          defn on-server-data (data)
+            case-default (:kind data) (println "\"unknown server data kind:" data)
+              :patch $ let
+                  changes $ :data data
+                when config/dev? $ js/console.log "\"Changes" (to-js-data changes)
+                reset! *store $ patch-twig @*store changes
         |*states $ quote
           defatom *states $ {}
             :states $ {}
               :cursor $ []
         |connect! $ quote
           defn connect! () $ let
-              url-obj $ url-parse/@ js/location.href true
-              host $ or (-> url-obj .-query .-host) js/location.hostname
-              port $ or (-> url-obj .-query .-port) (:port config/site)
+              url-obj $ url-parse js/location.href true
+              host $ either (-> url-obj .-query .-host) js/location.hostname
+              port $ either (-> url-obj .-query .-port) (:port config/site)
             ws-connect! (str "\"ws://" host "\":" port)
               {}
                 :on-open $ fn (event) (simulate-login!)
                 :on-close $ fn (event) (reset! *store nil) (js/console.error "\"Lost connection!")
-                :on-data $ fn (data)
-                  case (:kind data)
-                    :patch $ let
-                        changes $ :data data
-                      when config/dev? $ js/console.log "\"Changes" (to-js-data changes)
-                      reset! *store $ patch-twig @*store changes
-                    (:kind data) (println "\"unknown kind:" data)
+                :on-data on-server-data
         |simulate-login! $ quote
           defn simulate-login! () $ let
               raw $ .getItem js/localStorage (:storage-key config/site)
