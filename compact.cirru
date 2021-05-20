@@ -498,10 +498,8 @@
                 op-id $ id!
                 op-time $ unix-time!
               if config/dev? $ println "\"Dispatch!" (str op) op-data sid
-              cond
-                  = op :effect/persist
-                  persist-db!
-                true $ reset! *reel (reel-reducer @*reel updater op op-data sid op-id op-time)
+              if (= op :effect/persist) (persist-db!)
+                reset! *reel $ reel-reducer @*reel updater op op-data sid op-id op-time
         |main! $ quote
           defn main! ()
             println "\"Running mode:" $ if config/dev? "\"dev" "\"release"
@@ -512,17 +510,17 @@
             render-loop! *loop-trigger
             js/process.on "\"SIGINT" on-exit!
             repeat! 600 $ fn () (persist-db!)
+        |*proxied-dispatch! $ quote (defatom *proxied-dispatch! dispatch!)
         |*loop-trigger $ quote (defatom *loop-trigger 0)
         |run-server! $ quote
           defn run-server! (port)
             wss-serve! port $ {}
-              :on-open $ fn (sid socket) (dispatch! :session/connect nil sid) (js/console.info "\"New client.")
+              :on-open $ fn (sid socket) (@*proxied-dispatch! :session/connect nil sid) (println "\"New client.")
               :on-data $ fn (sid action)
-                case (:kind action)
-                  :op $ dispatch! (:op action) (:data action) sid
-                  (:kind action) (println "\"unknown data" action)
-              :on-close $ fn (sid event) (js/console.warn "\"Client closed!") (dispatch! :session/disconnect nil sid)
-              :on-error $ fn (error) (.error js/console error)
+                case-default (:kind action) (println "\"unknown action:" action)
+                  :op $ @*proxied-dispatch! (:op action) (:data action) sid
+              :on-close $ fn (sid event) (println "\"Client closed!") (@*proxied-dispatch! :session/disconnect nil sid)
+              :on-error $ fn (error) (js/console.error error)
         |sync-clients! $ quote
           defn sync-clients! (reel)
             wss-each! $ fn (sid socket)
@@ -565,7 +563,7 @@
             write-mildly! storage-path file-content
             write-mildly! backup-path file-content
         |reload! $ quote
-          defn reload! () (println "\"Code updated9.") (clear-twig-caches!)
+          defn reload! () (println "\"Code updated.") (clear-twig-caches!) (reset! *proxied-dispatch! dispatch!)
             reset! *reel $ refresh-reel @*reel @*initial-db updater
             js/clearTimeout @*loop-trigger
             render-loop! *loop-trigger
