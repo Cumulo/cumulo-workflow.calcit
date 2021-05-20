@@ -7,8 +7,8 @@
     |app.updater.user $ {}
       :ns $ quote
         ns app.updater.user $ :require
-          [] cumulo-util.core :refer $ [] find-first
-          [] "\"md5" :default md5
+          cumulo-util.core :refer $ find-first
+          "\"md5" :default md5
       :defs $ {}
         |log-in $ quote
           defn log-in (db op-data sid op-id op-time)
@@ -64,12 +64,12 @@
     |app.comp.login $ {}
       :ns $ quote
         ns app.comp.login $ :require
-          [] respo.core :refer $ [] defcomp <> div input button span
-          [] respo.comp.space :refer $ [] =<
-          [] respo.comp.inspect :refer $ [] comp-inspect
-          [] respo-ui.core :as ui
-          [] app.schema :as schema
-          [] app.config :as config
+          respo.core :refer $ defcomp <> div input button span
+          respo.comp.space :refer $ =<
+          respo.comp.inspect :refer $ comp-inspect
+          respo-ui.core :as ui
+          app.schema :as schema
+          app.config :as config
       :defs $ {}
         |comp-login $ quote
           defcomp comp-login (states)
@@ -116,7 +116,7 @@
       :proc $ quote ()
     |app.updater.session $ {}
       :ns $ quote
-        ns app.updater.session $ :require ([] app.schema :as schema)
+        ns app.updater.session $ :require (app.schema :as schema)
       :defs $ {}
         |connect $ quote
           defn connect (db op-data sid op-id op-time)
@@ -152,8 +152,8 @@
       :proc $ quote ()
     |app.updater $ {}
       :ns $ quote
-        ns app.updater $ :require ([] app.updater.session :as session) ([] app.updater.user :as user) ([] app.updater.router :as router) ([] app.schema :as schema)
-          [] respo-message.updater :refer $ [] update-messages
+        ns app.updater $ :require (app.updater.session :as session) (app.updater.user :as user) (app.updater.router :as router) (app.schema :as schema)
+          respo-message.updater :refer $ update-messages
       :defs $ {}
         |updater $ quote
           defn updater (db op op-data sid op-id op-time)
@@ -204,15 +204,15 @@
     |app.client $ {}
       :ns $ quote
         ns app.client $ :require
-          [] respo.core :refer $ [] render! clear-cache! realize-ssr!
-          [] respo.cursor :refer $ [] update-states
-          [] app.comp.container :refer $ [] comp-container
-          [] app.schema :as schema
-          [] app.config :as config
-          [] ws-edn.client :refer $ [] ws-connect! ws-send!
-          [] recollect.patch :refer $ [] patch-twig
-          [] cumulo-util.core :refer $ [] on-page-touch
-          [] "\"url-parse" :default url-parse
+          respo.core :refer $ render! clear-cache! realize-ssr!
+          respo.cursor :refer $ update-states
+          app.comp.container :refer $ comp-container
+          app.schema :as schema
+          app.config :as config
+          ws-edn.client :refer $ ws-connect! ws-send!
+          recollect.patch :refer $ patch-twig
+          cumulo-util.core :refer $ on-page-touch
+          "\"url-parse" :default url-parse
       :defs $ {}
         |ssr? $ quote
           def ssr? $ some? (.querySelector js/document "\"meta.respo-ssr")
@@ -282,11 +282,11 @@
     |app.comp.navigation $ {}
       :ns $ quote
         ns app.comp.navigation $ :require
-          [] respo.util.format :refer $ [] hsl
-          [] respo-ui.core :as ui
-          [] respo.comp.space :refer $ [] =<
-          [] respo.core :refer $ [] defcomp <> span div
-          [] app.config :as config
+          respo.util.format :refer $ hsl
+          respo-ui.core :as ui
+          respo.comp.space :refer $ =<
+          respo.core :refer $ defcomp <> span div
+          app.config :as config
       :defs $ {}
         |comp-navigation $ quote
           defcomp comp-navigation (logged-in? count-members)
@@ -313,19 +313,19 @@
     |app.comp.container $ {}
       :ns $ quote
         ns app.comp.container $ :require
-          [] hsl.core :refer $ [] hsl
-          [] respo-ui.core :as ui
-          [] respo.core :refer $ [] defcomp <> >> div span button input pre
-          [] respo.comp.inspect :refer $ [] comp-inspect
-          [] respo.comp.space :refer $ [] =<
-          [] app.comp.navigation :refer $ [] comp-navigation
-          [] app.comp.profile :refer $ [] comp-profile
-          [] app.comp.login :refer $ [] comp-login
-          [] respo-message.comp.messages :refer $ [] comp-messages
-          [] cumulo-reel.comp.reel :refer $ [] comp-reel
-          [] app.config :refer $ [] dev?
-          [] app.schema :as schema
-          [] app.config :as config
+          hsl.core :refer $ hsl
+          respo-ui.core :as ui
+          respo.core :refer $ defcomp <> >> div span button input pre
+          respo.comp.inspect :refer $ comp-inspect
+          respo.comp.space :refer $ =<
+          app.comp.navigation :refer $ comp-navigation
+          app.comp.profile :refer $ comp-profile
+          app.comp.login :refer $ comp-login
+          respo-message.comp.messages :refer $ comp-messages
+          cumulo-reel.comp.reel :refer $ comp-reel
+          app.config :refer $ dev?
+          app.schema :as schema
+          app.config :as config
       :defs $ {}
         |comp-container $ quote
           defcomp comp-container (states store)
@@ -392,12 +392,12 @@
     |app.comp.profile $ {}
       :ns $ quote
         ns app.comp.profile $ :require
-          [] respo.util.format :refer $ [] hsl
-          [] app.schema :as schema
-          [] respo-ui.core :as ui
-          [] respo.core :refer $ [] defcomp list-> <> span div button
-          [] respo.comp.space :refer $ [] =<
-          [] app.config :as config
+          respo.util.format :refer $ hsl
+          app.schema :as schema
+          respo-ui.core :as ui
+          respo.core :refer $ defcomp list-> <> span div button
+          respo.comp.space :refer $ =<
+          app.config :as config
       :defs $ {}
         |comp-profile $ quote
           defcomp comp-profile (user members)
@@ -445,9 +445,9 @@
     |app.twig.container $ {}
       :ns $ quote
         ns app.twig.container $ :require
-          [] app.twig.user :refer $ [] twig-user
-          [] "\"randomcolor" :as color
-          [] memof.alias :refer $ [] memof-call
+          app.twig.user :refer $ twig-user
+          "\"randomcolor" :as color
+          memof.alias :refer $ memof-call
       :defs $ {}
         |twig-container $ quote
           defn twig-container (db session records)
@@ -478,19 +478,19 @@
       :proc $ quote ()
     |app.server $ {}
       :ns $ quote
-        ns app.server $ :require ([] app.schema :as schema)
-          [] app.updater :refer $ [] updater
-          [] cljs.reader :refer $ [] read-string
-          [] cumulo-reel.core :refer $ [] reel-reducer refresh-reel reel-schema
-          [] "\"fs" :as fs
-          [] "\"path" :as path
-          [] app.config :as config
-          [] cumulo-util.file :refer $ [] write-mildly! get-backup-path! merge-local-edn!
-          [] cumulo-util.core :refer $ [] id! repeat! unix-time! delay!
-          [] app.twig.container :refer $ [] twig-container
-          [] recollect.diff :refer $ [] diff-twig
-          [] ws-edn.server :refer $ [] wss-serve! wss-send! wss-each!
-          [] recollect.twig :refer $ [] new-twig-loop! clear-twig-caches!
+        ns app.server $ :require (app.schema :as schema)
+          app.updater :refer $ updater
+          cljs.reader :refer $ read-string
+          cumulo-reel.core :refer $ reel-reducer refresh-reel reel-schema
+          "\"fs" :as fs
+          "\"path" :as path
+          app.config :as config
+          cumulo-util.file :refer $ write-mildly! get-backup-path! merge-local-edn!
+          cumulo-util.core :refer $ id! repeat! unix-time! delay!
+          app.twig.container :refer $ twig-container
+          recollect.diff :refer $ diff-twig
+          ws-edn.server :refer $ wss-serve! wss-send! wss-each!
+          recollect.twig :refer $ new-twig-loop! clear-twig-caches!
       :defs $ {}
         |dispatch! $ quote
           defn dispatch! (op op-data sid)
