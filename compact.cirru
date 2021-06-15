@@ -15,7 +15,7 @@
             let-sugar
                   [] username password
                   , op-data
-                maybe-user $ -> (:users db) (vals) (set->list)
+                maybe-user $ -> (:users db) (vals) (.to-list)
                   find $ fn (user)
                     and $ = username (:name user)
               update-in db ([] :sessions sid)
@@ -112,7 +112,7 @@
             fn (e dispatch!)
               dispatch! (if signup? :user/sign-up :user/log-in) ([] username password)
               .setItem js/localStorage (:storage-key config/site)
-                write-cirru-edn $ [] username password
+                format-cirru-edn $ [] username password
       :proc $ quote ()
     |app.updater.session $ {}
       :ns $ quote
@@ -352,7 +352,7 @@
                         =< 8 nil
                         <> "\"demo page"
                         pre $ {}
-                          :inner-text $ str "\"backend data" (write-cirru-edn store)
+                          :inner-text $ str "\"backend data" (format-cirru-edn store)
                       :profile $ comp-profile (:user store) (:data router)
                       <> router
                     comp-login $ >> states :login
@@ -556,7 +556,7 @@
               if found? (println "\"Found local EDN data") (println "\"Found no data")
         |persist-db! $ quote
           defn persist-db! () $ let
-              file-content $ write-cirru-edn
+              file-content $ format-cirru-edn
                 assoc (:db @*reel) :sessions $ {}
               storage-path storage-file
               backup-path $ get-backup-path!
