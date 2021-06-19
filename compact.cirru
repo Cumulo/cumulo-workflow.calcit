@@ -182,15 +182,7 @@
             (exists? js/process) (= "\"true" js/process.env.cdn)
             true false
         |dev? $ quote
-          def dev? $ let
-              debug? true
-            if debug?
-              cond
-                  exists? js/window
-                  , true
-                (exists? js/process) (not= "\"true" js/process.env.release)
-                true true
-              , false
+          def dev? $ = "\"dev" (get-env "\"mode")
         |site $ quote
           def site $ {} (:port 5021) (:title "\"Cumulo") (:icon "\"http://cdn.tiye.me/logo/cumulo.png") (:dev-ui "\"http://localhost:8100/main.css") (:release-ui "\"http://cdn.tiye.me/favored-fonts/main.css") (:cdn-url "\"http://cdn.tiye.me/cumulo-workflow/") (:theme "\"#eeeeff") (:storage-key "\"workflow-storage-calcit") (:storage-file "\"storage.edn")
       :proc $ quote ()
@@ -499,7 +491,7 @@
                 op-time $ unix-time!
               if config/dev? $ println "\"Dispatch!" (str op) op-data sid
               if (= op :effect/persist) (persist-db!)
-                reset! *reel $ reel-reducer @*reel updater op op-data sid op-id op-time
+                reset! *reel $ reel-reducer @*reel updater op op-data sid op-id op-time config/dev?
         |main! $ quote
           defn main! ()
             println "\"Running mode:" $ if config/dev? "\"dev" "\"release"
