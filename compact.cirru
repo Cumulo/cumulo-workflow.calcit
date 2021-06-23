@@ -175,16 +175,10 @@
     |app.config $ {}
       :ns $ quote (ns app.config)
       :defs $ {}
-        |cdn? $ quote
-          def cdn? $ cond
-              exists? js/window
-              , false
-            (exists? js/process) (= "\"true" js/process.env.cdn)
-            true false
         |dev? $ quote
           def dev? $ = "\"dev" (get-env "\"mode")
         |site $ quote
-          def site $ {} (:port 5021) (:title "\"Cumulo") (:icon "\"http://cdn.tiye.me/logo/cumulo.png") (:dev-ui "\"http://localhost:8100/main.css") (:release-ui "\"http://cdn.tiye.me/favored-fonts/main.css") (:cdn-url "\"http://cdn.tiye.me/cumulo-workflow/") (:theme "\"#eeeeff") (:storage-key "\"workflow-storage-calcit") (:storage-file "\"storage.edn")
+          def site $ {} (:port 5021) (:title "\"Cumulo") (:icon "\"http://cdn.tiye.me/logo/cumulo.png") (:theme "\"#eeeeff") (:storage-key "\"workflow-storage-calcit") (:storage-file "\"storage.edn")
       :proc $ quote ()
     |app.twig.user $ {}
       :ns $ quote
@@ -206,27 +200,23 @@
           cumulo-util.core :refer $ on-page-touch
           "\"url-parse" :default url-parse
       :defs $ {}
-        |ssr? $ quote
-          def ssr? $ some? (.querySelector js/document "\"meta.respo-ssr")
         |dispatch! $ quote
           defn dispatch! (op op-data)
             when
               and config/dev? $ not= op :states
               println "\"Dispatch" op op-data
-            case op
+            case-default op
+              ws-send! $ {} (:kind :op) (:op op) (:data op-data)
               :states $ reset! *states (update-states @*states op-data)
               :effect/connect $ connect!
-              op $ ws-send!
-                {} (:kind :op) (:op op) (:data op-data)
         |*store $ quote (defatom *store nil)
         |main! $ quote
           defn main! ()
             println "\"Running mode:" $ if config/dev? "\"dev" "\"release"
-            if ssr? $ render-app! realize-ssr!
-            render-app! render!
+            render-app!
             connect!
-            add-watch *store :changes $ fn (store prev) (render-app! render!)
-            add-watch *states :changes $ fn (states prev) (render-app! render!)
+            add-watch *store :changes $ fn (store prev) (render-app!)
+            add-watch *states :changes $ fn (states prev) (render-app!)
             on-page-touch $ fn ()
               if (nil? @*store) (connect!)
             println "\"App started!"
@@ -253,20 +243,19 @@
                 :on-data on-server-data
         |simulate-login! $ quote
           defn simulate-login! () $ let
-              raw $ .getItem js/localStorage (:storage-key config/site)
+              raw $ .!getItem js/localStorage (:storage-key config/site)
             if (some? raw)
               do (println "\"Found storage.")
                 dispatch! :user/log-in $ parse-cirru-edn raw
               do $ println "\"Found no storage."
         |render-app! $ quote
-          defn render-app! (renderer)
-            renderer mount-target
-              comp-container (:states @*states) @*store
-              , dispatch!
+          defn render-app! () $ render! mount-target
+            comp-container (:states @*states) @*store
+            , dispatch!
         |reload! $ quote
-          defn reload! () (remove-watch *store :changes) (remove-watch *store :changes) (clear-cache!) (render-app! render!)
-            add-watch *store :changes $ fn (store prev) (render-app! render!)
-            add-watch *states :changes $ fn (states prev) (render-app! render!)
+          defn reload! () (remove-watch *store :changes) (remove-watch *states :changes) (clear-cache!) (render-app!)
+            add-watch *store :changes $ fn (store prev) (render-app!)
+            add-watch *states :changes $ fn (states prev) (render-app!)
             println "\"Code updated."
         |mount-target $ quote
           def mount-target $ .querySelector js/document "\".app"
@@ -335,7 +324,7 @@
                   {} $ :style (merge ui/global ui/fullscreen ui/column)
                   comp-navigation (:logged-in? store) (:count store)
                   if (:logged-in? store)
-                    case (:name router)
+                    case-default (:name router) (<> router)
                       :home $ div
                         {} $ :style
                           {} $ :padding "\"8px"
@@ -346,7 +335,6 @@
                         pre $ {}
                           :inner-text $ str "\"backend data" (format-cirru-edn store)
                       :profile $ comp-profile (:user store) (:data router)
-                      <> router
                     comp-login $ >> states :login
                   comp-status-color $ :color store
                   when dev? $ comp-inspect "\"Store" store
