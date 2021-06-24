@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@calcit/procs": "^0.4.0-a13"
+    "@calcit/procs": "^0.4.0-a14"
   },
   "scripts": {
     "watch-server": "cr --emit-js",
@@ -18,7 +18,7 @@
     "shortid": "^2.2.16",
     "url-parse": "^1.5.1",
     "vite": "^2.3.8",
-    "webpack": "^5.39.1",
+    "webpack": "^5.40.0",
     "webpack-cli": "^4.7.2",
     "ws": "^7.5.0"
   },
