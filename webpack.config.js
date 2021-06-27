@@ -20,6 +20,7 @@ module.exports = {
   devtool: "hidden-source-map",
   externals: {
     ws: "commonjs ws",
+    randomcolor: "commonjs randomcolor",
     shortid: "commonjs shortid",
     md5: "commonjs md5",
   },
