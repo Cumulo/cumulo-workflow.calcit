@@ -395,7 +395,7 @@
                 =< 8 nil
                 list->
                   {} $ :style ui/row
-                  -> members (to-pairs)
+                  -> members (.to-list)
                     map $ fn (pair)
                       let[] (k username) pair $ [] k
                         div
@@ -450,7 +450,7 @@
                 , nil
         |twig-members $ quote
           defn twig-members (sessions users)
-            -> sessions (to-pairs)
+            -> sessions (.to-list)
               map $ fn (pair)
                 let[] (k session) pair $ [] k
                   get-in users $ [] (:user-id session) :name
