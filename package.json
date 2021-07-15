@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@calcit/procs": "^0.4.3"
+    "@calcit/procs": "^0.4.9"
   },
   "scripts": {
     "watch-server": "cr --emit-js",
@@ -13,14 +13,15 @@
     "watch-page": "cr --emit-js --emit-path out-page/ --init-fn app.client/main! --reload-fn app.client/reload!"
   },
   "devDependencies": {
+    "bottom-tip": "^0.1.2-a3",
     "md5": "^2.3.0",
     "randomcolor": "^0.6.2",
     "shortid": "^2.2.16",
     "url-parse": "^1.5.1",
-    "vite": "^2.3.8",
-    "webpack": "^5.40.0",
+    "vite": "^2.4.2",
+    "webpack": "^5.44.0",
     "webpack-cli": "^4.7.2",
-    "ws": "^7.5.0"
+    "ws": "^7.5.3"
   },
   "version": "0.0.1"
 }
